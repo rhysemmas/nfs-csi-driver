@@ -1,0 +1,68 @@
+# CSI controller Deployment: creates/deletes volume directories on the NFS server.
+# Requires the NFS server export to be mounted at /nfs-root (see volume below).
+# Update the NFS volume 'server' and 'path' to match your NFS server.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-csi-controller
+  namespace: nfs-csi
+  labels:
+    app: nfs-csi-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-csi-controller
+  template:
+    metadata:
+      labels:
+        app: nfs-csi-controller
+    spec:
+      serviceAccountName: nfs-csi-controller-sa
+      containers:
+        # Our CSI driver (controller + identity only; node runs in DaemonSet)
+        - name: csi-driver
+          image: nfs-csi-driver:latest   # Replace with your built image
+          imagePullPolicy: IfNotPresent
+          args:
+            - "--endpoint=unix:///csi/csi.sock"
+            - "--driver-name=nfs.csi.neo4j.io"
+            - "--nfs-server=$(NFS_SERVER)"
+            - "--nfs-root-path=$(NFS_ROOT_PATH)"
+            - "--nfs-root-mount=/nfs-root"
+          env:
+            - name: NFS_SERVER
+              valueFrom:
+                configMapKeyRef:
+                  name: nfs-csi-config
+                  key: NFS_SERVER
+            - name: NFS_ROOT_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: nfs-csi-config
+                  key: NFS_ROOT_PATH
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+            - name: nfs-root
+              mountPath: /nfs-root
+        # Sidecar: watches PVCs and calls CreateVolume/DeleteVolume
+        - name: csi-provisioner
+          image: registry.k8s.io/sig-storage/csi-provisioner:v4.0.0
+          args:
+            - "-csi-address=unix:///csi/csi.sock"
+            - "-driver-name=nfs.csi.neo4j.io"
+            - "-leader-election"
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+      volumes:
+        - name: socket-dir
+          emptyDir: {}
+        # Mount your NFS server export here so the controller can create dirs
+        - name: nfs-root
+          nfs:
+            # Must match NFS_SERVER and path under NFS_ROOT_PATH (or the exported path)
+            server: nfs-server.default.svc.cluster.local
+            path: /exports

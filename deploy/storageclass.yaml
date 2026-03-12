@@ -1,0 +1,13 @@
+# StorageClass for dynamic provisioning. PVCs using this class will get
+# a new directory on the NFS server and an NFS mount in the pod.
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-csi
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: nfs.csi.neo4j.io
+parameters: {}
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+allowVolumeExpansion: false

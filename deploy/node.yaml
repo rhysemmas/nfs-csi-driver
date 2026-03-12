@@ -1,0 +1,71 @@
+# CSI node DaemonSet: runs on every node, mounts NFS in NodePublishVolume.
+# Needs privileged and hostPath so mounts propagate to the host.
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nfs-csi-node
+  namespace: nfs-csi
+  labels:
+    app: nfs-csi-node
+spec:
+  selector:
+    matchLabels:
+      app: nfs-csi-node
+  template:
+    metadata:
+      labels:
+        app: nfs-csi-node
+    spec:
+      # Allow mounting into host so kubelet sees the NFS mount
+      hostNetwork: true
+      hostPID: true
+      containers:
+        - name: csi-driver
+          securityContext:
+            privileged: true
+          image: nfs-csi-driver:latest   # Replace with your built image
+          imagePullPolicy: IfNotPresent
+          args:
+            - "--endpoint=unix:///csi/csi.sock"
+            - "--driver-name=nfs.csi.neo4j.io"
+            - "--node-id=$(NODE_NAME)"
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+            - name: kubelet-dir
+              mountPath: /var/lib/kubelet
+              mountPropagation: Bidirectional
+        - name: node-driver-registrar
+          image: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.8.0
+          args:
+            - "-v=2"
+            - "-csi-address=unix:///csi/csi.sock"
+            - "-kubelet-registration-path=/var/lib/kubelet/plugins/nfs.csi.neo4j.io/csi.sock"
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+            - name: registration-dir
+              mountPath: /registration
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "rm -rf /registration/nfs.csi.neo4j.io"]
+      volumes:
+        - name: socket-dir
+          hostPath:
+            path: /var/lib/kubelet/plugins/nfs.csi.neo4j.io
+            type: DirectoryOrCreate
+        - name: registration-dir
+          hostPath:
+            path: /var/lib/kubelet/plugins_registered
+            type: DirectoryOrCreate
+        - name: kubelet-dir
+          hostPath:
+            path: /var/lib/kubelet
+            type: Directory

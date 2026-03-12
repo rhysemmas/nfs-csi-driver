@@ -1,0 +1,43 @@
+# ServiceAccount and RBAC for the CSI controller (external-provisioner sidecar).
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nfs-csi-controller-sa
+  namespace: nfs-csi
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: nfs-csi-provisioner-role
+rules:
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list", "watch", "create", "update", "patch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["volumeattachments"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: nfs-csi-provisioner-binding
+subjects:
+  - kind: ServiceAccount
+    name: nfs-csi-controller-sa
+    namespace: nfs-csi
+roleRef:
+  kind: ClusterRole
+  name: nfs-csi-provisioner-role
+  apiGroup: rbac.authorization.k8s.io

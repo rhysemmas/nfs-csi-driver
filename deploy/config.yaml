@@ -1,0 +1,14 @@
+# ConfigMap and Secret for NFS server configuration.
+# Edit NFS_SERVER and NFS_ROOT_PATH to match your NFS server.
+# The NFS server must export NFS_ROOT_PATH (e.g. /exports) and the controller
+# pod will mount it and create one directory per volume under that path.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nfs-csi-config
+  namespace: nfs-csi
+data:
+  # Hostname or IP of your NFS server (e.g. nfs-server.default.svc.cluster.local or 10.0.0.5)
+  NFS_SERVER: "192.168.1.2"
+  # Path exported by the NFS server; volume dirs will be created under this path
+  NFS_ROOT_PATH: "/srv/nfs/k8s/volumes/"
