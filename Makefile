@@ -9,8 +9,8 @@ build-linux:
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bin/csi-driver ./cmd/csi-driver
 
 # Build the Docker image
-IMAGE_NAME ?= nfs-csi-driver
-IMAGE_TAG  ?= latest
+IMAGE_NAME ?= rhysemmas/nfs-csi-driver
+IMAGE_TAG  ?= v0.2
 
 .PHONY: image
 image:
