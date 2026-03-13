@@ -21,6 +21,15 @@ spec:
       labels:
         app: nfs-csi-controller
     spec:
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: "true"
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
       serviceAccountName: nfs-csi-controller-sa
       containers:
         # Our CSI driver (controller + identity only; node runs in DaemonSet)
