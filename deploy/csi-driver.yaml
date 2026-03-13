@@ -1,0 +1,12 @@
+# CSIDriver tells Kubernetes this driver does not support attach (ControllerPublishVolume).
+# Without this, the attachdetach-controller waits for an external-attacher and times out.
+# NFS is mount-only; set attachRequired: false so pods can mount without an attach step.
+apiVersion: storage.k8s.io/v1
+kind: CSIDriver
+metadata:
+  name: nfs.csi.nootnoot.co.uk
+spec:
+  attachRequired: false
+  podInfoOnMount: false
+  volumeLifecycleModes:
+    - Persistent

@@ -33,6 +33,7 @@ deploy:
 	kubectl apply -f deploy/config.yaml
 	kubectl apply -f deploy/controller-nfs-pv-pvc.yaml
 	kubectl apply -f deploy/rbac.yaml
+	kubectl apply -f deploy/csi-driver.yaml
 	kubectl apply -f deploy/controller.yaml
 	kubectl apply -f deploy/node.yaml
 	kubectl apply -f deploy/storageclass.yaml
@@ -42,6 +43,7 @@ undeploy:
 	kubectl delete -f deploy/storageclass.yaml --ignore-not-found
 	kubectl delete -f deploy/node.yaml --ignore-not-found
 	kubectl delete -f deploy/controller.yaml --ignore-not-found
+	kubectl delete -f deploy/csi-driver.yaml --ignore-not-found
 	kubectl delete -f deploy/rbac.yaml --ignore-not-found
 	kubectl delete -f deploy/controller-nfs-pv-pvc.yaml --ignore-not-found
 	kubectl delete -f deploy/config.yaml --ignore-not-found
