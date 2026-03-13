@@ -142,6 +142,28 @@ EOF
 
 - Check that a new directory appeared on the NFS server under the export path and that the pod can use the volume (e.g. `kubectl exec test-pod -- touch /data/hello`).
 
+## Where NFS mounts happen
+
+There are two different NFS mounts; only one is in our code:
+
+1. **Controller pod’s NFS volume** (the `nfs-root` volume in `deploy/controller.yaml`)  
+   **Who does it:** **Kubelet** when it starts the controller pod.  
+   **Where in our repo:** Not in our code — it’s the Pod’s `volumes[].nfs` in `deploy/controller.yaml`. Kubelet mounts that NFS export at `/nfs-root` so the controller can create/delete directories there.  
+   If you see logs like `Mounting command: mount` and `rpc.statd is not running`, that’s this mount.
+
+2. **Per-pod volume mount** (when a pod uses a PVC backed by this driver)  
+   **Who does it:** Our **node** plugin.  
+   **Where in our code:** `driver/node.go` → `NodePublishVolume`: it runs `mount -t nfs -o vers=4,nolock server:share <targetPath>`. That runs in the **node** DaemonSet pod (on the node where the workload pod is scheduled).
+
+## Troubleshooting: rpc.statd / nolock
+
+If the **controller** pod fails with `rpc.statd is not running` or `use '-o nolock'`, the NFS volume that’s failing is the controller’s own `nfs-root` mount (done by kubelet). Inline Pod NFS volumes don’t support `mountOptions`, so you can:
+
+- Start **rpc.statd** (and **rpcbind**) on the node that runs the controller pod, or  
+- Use a **PersistentVolume** (and PVC) with `mountOptions: [nolock]` for the controller’s NFS share, and use that PVC as the `nfs-root` volume in the controller Deployment.
+
+Also ensure the NFS path exists on the server and is exported; `No such file or directory` or `Connection refused` usually means the path is wrong or the NFS server/port is unreachable.
+
 ## Driver options (flags)
 
 | Flag | Description | Controller | Node |

@@ -1,5 +1,8 @@
 # CSI controller Deployment: creates/deletes volume directories on the NFS server.
 # Requires the NFS server export to be mounted at /nfs-root (see volume below).
+# This NFS mount is performed by KUBELET when the pod starts (not by our CSI code).
+# If you see "rpc.statd is not running", either start rpc.statd on the node or use
+# a PV+PVC with mountOptions: [nolock] and use that PVC as the nfs-root volume.
 # Update the NFS volume 'server' and 'path' to match your NFS server.
 ---
 apiVersion: apps/v1
@@ -28,9 +31,9 @@ spec:
           args:
             - "--endpoint=unix:///csi/csi.sock"
             - "--driver-name=nfs.csi.nootnoot.co.uk"
-            - "--nfs-server=${NFS_SERVER}"
-            - "--nfs-root-path=${NFS_ROOT_PATH}"
-            - "--nfs-root-mount=/nfs-root"
+            - "--nfs-server=$(NFS_SERVER)"
+            - "--nfs-root-path=$(NFS_ROOT_PATH)"
+            - "--nfs-root-mount=/nfs-root" # Local path for controller to mount nfs share
           env:
             - name: NFS_SERVER
               valueFrom:
@@ -60,9 +63,9 @@ spec:
       volumes:
         - name: socket-dir
           emptyDir: {}
-        # Mount your NFS server export here so the controller can create dirs
+        # Mount your NFS server export here so the controller can create dirs.
+        # Kubelet mounts this; for "rpc.statd" errors use a PV with mountOptions: [nolock].
         - name: nfs-root
           nfs:
-            # Must match NFS_SERVER and path under NFS_ROOT_PATH (or the exported path)
-            server: nfs-server.default.svc.cluster.local
-            path: /exports
+            server: "192.168.1.2"
+            path: "/srv/nfs/k8s/volumes"
