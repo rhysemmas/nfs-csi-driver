@@ -10,7 +10,7 @@ build-linux:
 
 # Build the Docker image
 IMAGE_NAME ?= rhysemmas/nfs-csi-driver
-IMAGE_TAG  ?= v0.2
+IMAGE_TAG  ?= v0.3
 
 .PHONY: image
 image:

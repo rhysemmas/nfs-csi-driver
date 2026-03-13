@@ -34,7 +34,7 @@ spec:
       containers:
         # Our CSI driver (controller + identity only; node runs in DaemonSet)
         - name: csi-driver
-          image: rhysemmas/nfs-csi-driver:v0.2  # Replace with your built image
+          image: rhysemmas/nfs-csi-driver:v0.3  # Replace with your built image
           imagePullPolicy: IfNotPresent
           args:
             - "--endpoint=unix:///csi/csi.sock"
