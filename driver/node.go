@@ -6,9 +6,9 @@ import (
 	"os/exec"
 
 	"github.com/container-storage-interface/spec/lib/go/csi"
-	"k8s.io/klog/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"k8s.io/klog/v2"
 )
 
 // NodeService implements the CSI Node service.
@@ -52,10 +52,10 @@ func (s *NodeService) NodePublishVolume(ctx context.Context, req *csi.NodePublis
 	remote := server + ":" + share
 	klog.Infof("Mounting NFS %s to %s", remote, req.TargetPath)
 
-	cmd := exec.Command("mount", "-t", "nfs", "-o", "vers=4", remote, req.TargetPath)
+	cmd := exec.Command("mount", "-t", "nfs", "-o", "vers=4,nolock", remote, req.TargetPath)
 	if output, err := cmd.CombinedOutput(); err != nil {
 		// Try NFSv3 if v4 fails (e.g. some servers only support v3)
-		cmd3 := exec.Command("mount", "-t", "nfs", "-o", "vers=3", remote, req.TargetPath)
+		cmd3 := exec.Command("mount", "-t", "nfs", "-o", "vers=3,nolock", remote, req.TargetPath)
 		if output3, err3 := cmd3.CombinedOutput(); err3 != nil {
 			return nil, status.Errorf(codes.Internal, "mount failed (nfs4: %v, nfs3: %v): %s / %s", err, err3, string(output), string(output3))
 		}

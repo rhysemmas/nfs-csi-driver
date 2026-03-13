@@ -29,7 +29,7 @@ spec:
           args:
             - "--endpoint=unix:///csi/csi.sock"
             - "--driver-name=nfs.csi.nootnoot.co.uk"
-            - "--node-id=$(NODE_NAME)"
+            - "--node-id=${NODE_NAME}"
           env:
             - name: NODE_NAME
               valueFrom:
