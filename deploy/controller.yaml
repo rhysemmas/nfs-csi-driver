@@ -28,8 +28,8 @@ spec:
           args:
             - "--endpoint=unix:///csi/csi.sock"
             - "--driver-name=nfs.csi.nootnoot.co.uk"
-            - "--nfs-server=$(NFS_SERVER)"
-            - "--nfs-root-path=$(NFS_ROOT_PATH)"
+            - "--nfs-server=${NFS_SERVER}"
+            - "--nfs-root-path=${NFS_ROOT_PATH}"
             - "--nfs-root-mount=/nfs-root"
           env:
             - name: NFS_SERVER
