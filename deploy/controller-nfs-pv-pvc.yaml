@@ -1,0 +1,36 @@
+# PV and PVC for the controller's NFS root, with mountOptions: [nolock] so kubelet
+# mounts without rpc.statd. Apply this before the controller; keep server/path in
+# sync with deploy/config.yaml and your NFS server.
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-root-pv
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""   # No class so PVC can bind without a StorageClass
+  mountOptions:
+    - nolock
+  nfs:
+    server: "192.168.1.2"
+    path: "/srv/nfs/k8s/volumes"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-root-pvc
+  namespace: nfs-csi
+spec:
+  accessModes:
+    - ReadWriteMany
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: ""
+  volumeName: nfs-root-pv   # Bind to the PV above

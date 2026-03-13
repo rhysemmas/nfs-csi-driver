@@ -85,6 +85,7 @@ containers:
 ```bash
 kubectl apply -f deploy/namespace.yaml
 kubectl apply -f deploy/config.yaml
+kubectl apply -f deploy/controller-nfs-pv-pvc.yaml   # PV+PVC with nolock for controller
 kubectl apply -f deploy/rbac.yaml
 kubectl apply -f deploy/controller.yaml
 kubectl apply -f deploy/node.yaml

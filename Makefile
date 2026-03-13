@@ -26,11 +26,12 @@ test:
 tidy:
 	go mod tidy
 
-# Install in cluster (after setting NFS server in deploy/config.yaml and deploy/controller.yaml)
+# Install in cluster (after setting NFS server in deploy/config.yaml and deploy/controller-nfs-pv-pvc.yaml)
 .PHONY: deploy
 deploy:
 	kubectl apply -f deploy/namespace.yaml
 	kubectl apply -f deploy/config.yaml
+	kubectl apply -f deploy/controller-nfs-pv-pvc.yaml
 	kubectl apply -f deploy/rbac.yaml
 	kubectl apply -f deploy/controller.yaml
 	kubectl apply -f deploy/node.yaml
@@ -42,5 +43,6 @@ undeploy:
 	kubectl delete -f deploy/node.yaml --ignore-not-found
 	kubectl delete -f deploy/controller.yaml --ignore-not-found
 	kubectl delete -f deploy/rbac.yaml --ignore-not-found
+	kubectl delete -f deploy/controller-nfs-pv-pvc.yaml --ignore-not-found
 	kubectl delete -f deploy/config.yaml --ignore-not-found
 	kubectl delete -f deploy/namespace.yaml --ignore-not-found

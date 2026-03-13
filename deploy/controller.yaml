@@ -1,9 +1,8 @@
 # CSI controller Deployment: creates/deletes volume directories on the NFS server.
-# Requires the NFS server export to be mounted at /nfs-root (see volume below).
-# This NFS mount is performed by KUBELET when the pod starts (not by our CSI code).
-# If you see "rpc.statd is not running", either start rpc.statd on the node or use
-# a PV+PVC with mountOptions: [nolock] and use that PVC as the nfs-root volume.
-# Update the NFS volume 'server' and 'path' to match your NFS server.
+# The nfs-root volume is provided by the nfs-root PVC (see controller-nfs-pv-pvc.yaml),
+# which uses a PV with mountOptions: [nolock] so kubelet does not require rpc.statd.
+# Apply controller-nfs-pv-pvc.yaml before this Deployment; keep PV server/path in
+# sync with deploy/config.yaml and your NFS server.
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -63,9 +62,7 @@ spec:
       volumes:
         - name: socket-dir
           emptyDir: {}
-        # Mount your NFS server export here so the controller can create dirs.
-        # Kubelet mounts this; for "rpc.statd" errors use a PV with mountOptions: [nolock].
+        # NFS root via PVC so kubelet uses the PV's mountOptions (e.g. nolock).
         - name: nfs-root
-          nfs:
-            server: "192.168.1.2"
-            path: "/srv/nfs/k8s/volumes"
+          persistentVolumeClaim:
+            claimName: nfs-root-pvc
