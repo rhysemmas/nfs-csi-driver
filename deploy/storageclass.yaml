@@ -6,7 +6,7 @@ metadata:
   name: nfs-csi
   annotations:
     storageclass.kubernetes.io/is-default-class: "false"
-provisioner: nfs.csi.neo4j.io
+provisioner: nfs.csi.nootnoot.co.uk
 parameters: {}
 reclaimPolicy: Delete
 volumeBindingMode: Immediate

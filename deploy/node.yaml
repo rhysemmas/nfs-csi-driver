@@ -28,7 +28,7 @@ spec:
           imagePullPolicy: IfNotPresent
           args:
             - "--endpoint=unix:///csi/csi.sock"
-            - "--driver-name=nfs.csi.neo4j.io"
+            - "--driver-name=nfs.csi.nootnoot.co.uk"
             - "--node-id=$(NODE_NAME)"
           env:
             - name: NODE_NAME
@@ -46,7 +46,7 @@ spec:
           args:
             - "-v=2"
             - "-csi-address=unix:///csi/csi.sock"
-            - "-kubelet-registration-path=/var/lib/kubelet/plugins/nfs.csi.neo4j.io/csi.sock"
+            - "-kubelet-registration-path=/var/lib/kubelet/plugins/nfs.csi.nootnoot.co.uk/csi.sock"
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
@@ -55,11 +55,11 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh", "-c", "rm -rf /registration/nfs.csi.neo4j.io"]
+                command: ["/bin/sh", "-c", "rm -rf /registration/nfs.csi.nootnoot.co.uk"]
       volumes:
         - name: socket-dir
           hostPath:
-            path: /var/lib/kubelet/plugins/nfs.csi.neo4j.io
+            path: /var/lib/kubelet/plugins/nfs.csi.nootnoot.co.uk
             type: DirectoryOrCreate
         - name: registration-dir
           hostPath:

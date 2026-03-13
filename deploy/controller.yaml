@@ -27,7 +27,7 @@ spec:
           imagePullPolicy: IfNotPresent
           args:
             - "--endpoint=unix:///csi/csi.sock"
-            - "--driver-name=nfs.csi.neo4j.io"
+            - "--driver-name=nfs.csi.nootnoot.co.uk"
             - "--nfs-server=$(NFS_SERVER)"
             - "--nfs-root-path=$(NFS_ROOT_PATH)"
             - "--nfs-root-mount=/nfs-root"
@@ -52,7 +52,7 @@ spec:
           image: registry.k8s.io/sig-storage/csi-provisioner:v4.0.0
           args:
             - "-csi-address=unix:///csi/csi.sock"
-            - "-driver-name=nfs.csi.neo4j.io"
+            - "-driver-name=nfs.csi.nootnoot.co.uk"
             - "-leader-election"
           volumeMounts:
             - name: socket-dir

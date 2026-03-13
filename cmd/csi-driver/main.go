@@ -17,13 +17,18 @@ import (
 var (
 	// Default: host path where kubelet expects the socket when running on a node.
 	// In deploy/ we override this with unix:///csi/csi.sock (container mount point).
-	endpoint    = flag.String("endpoint", "unix:///var/lib/kubelet/plugins/nfs.csi.neo4j.io/csi.sock", "CSI endpoint")
-	driverName  = flag.String("driver-name", "nfs.csi.neo4j.io", "Name of the CSI driver")
-	nodeID      = flag.String("node-id", "", "Node ID (required for node service)")
-	nfsServer   = flag.String("nfs-server", "", "NFS server hostname or IP (e.g. nfs-server.default.svc.cluster.local)")
-	nfsRootPath = flag.String("nfs-root-path", "/exports", "Root path exported by NFS server where volume dirs are created")
+	endpoint     = flag.String("endpoint", "unix:///var/lib/kubelet/plugins/nfs.csi.nootnoot.co.uk/csi.sock", "CSI endpoint")
+	driverName   = flag.String("driver-name", "nfs.csi.nootnoot.co.uk", "Name of the CSI driver")
+	nodeID       = flag.String("node-id", "", "Node ID (required for node service)")
+	nfsServer    = flag.String("nfs-server", "", "NFS server hostname or IP (e.g. nfs-server.default.svc.cluster.local)")
+	nfsRootPath  = flag.String("nfs-root-path", "/exports", "Root path exported by NFS server where volume dirs are created")
 	nfsRootMount = flag.String("nfs-root-mount", "/nfs-root", "Local path where NFS root is mounted (controller only)")
 )
+
+// TODO:
+//  - need -o nolock in nfs command
+//  - get dir not found when tries to mount k8s pod dir
+//  - need sub dir for k8s pod dir? is mounting 'root' path I have exposed
 
 func main() {
 	klog.InitFlags(nil)

@@ -147,7 +147,7 @@ EOF
 | Flag | Description | Controller | Node |
 |------|-------------|------------|------|
 | `--endpoint` | CSI gRPC endpoint (e.g. `unix:///csi/csi.sock`) | ✓ | ✓ |
-| `--driver-name` | Driver name (default `nfs.csi.neo4j.io`) | ✓ | ✓ |
+| `--driver-name` | Driver name (default `nfs.csi.nootnoot.co.uk`) | ✓ | ✓ |
 | `--node-id` | Kubernetes node name (required for node) | — | ✓ |
 | `--nfs-server` | NFS server hostname/IP | ✓ | — |
 | `--nfs-root-path` | Exported path on NFS server | ✓ | — |
