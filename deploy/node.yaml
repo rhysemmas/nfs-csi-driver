@@ -24,7 +24,7 @@ spec:
         - name: csi-driver
           securityContext:
             privileged: true
-          image: nfs-csi-driver:latest   # Replace with your built image
+          image: rhysemmas/nfs-csi-driver:v0.1   # Replace with your built image
           imagePullPolicy: IfNotPresent
           args:
             - "--endpoint=unix:///csi/csi.sock"
