@@ -55,15 +55,16 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh", "-c", "rm -rf /registration/nfs.csi.nootnoot.co.uk"]
+                command: ["/bin/sh", "-c", "rm -f /registration/nfs.csi.nootnoot.co.uk-reg.sock"]
       volumes:
         - name: socket-dir
           hostPath:
             path: /var/lib/kubelet/plugins/nfs.csi.nootnoot.co.uk
             type: DirectoryOrCreate
+        # Kubelet discovers CSI drivers via sockets in this dir (see https://kubernetes.io/docs/reference/node/kubelet-files/#dra-csi-and-device-plugins)
         - name: registration-dir
           hostPath:
-            path: /var/lib/kubelet/plugins_registered
+            path: /var/lib/kubelet/plugins_registry
             type: DirectoryOrCreate
         - name: kubelet-dir
           hostPath:
